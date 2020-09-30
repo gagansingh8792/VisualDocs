@@ -144,8 +144,8 @@ Create Chart
 
   Create 1st chart (inatalling simple ConfigMap):
 
-   1) delete all the files in "templetes folder" and cd templetes
-   2) create a simple configmap.yml file which will be installed by helm
+1> delete all the files in "templetes folder" and cd templetes
+2> create a simple configmap.yml file which will be installed by helm
         
          apiVersion: v1
          kind: Configmap
@@ -153,7 +153,144 @@ Create Chart
            name: demo-helm-confgmap
          data:
            myvalue: "simple config Map"
-   
-   3) install the ConfigMap using Helm     syntax :- #helm install <name> <Chart_folder_path>
 
-      #helm install helm-demo-configmap /tmp/helm_demo/mychart    //this will install the ConfigMap 
+3> install the ConfigMap using Helm     
+    
+  syntax :- #helm install <name> <Chart_folder_path>
+
+  #helm install helm-demo-configmap /tmp/helm_demo/mychart       ##this will install the ConfigMap 
+   
+4> list all the installed charts
+  #helm ls
+
+5> Kubernetes command to check the deployment
+     
+  #kubectl get cm -o wide
+  #kubectl describe cm <ConfigMap_name>
+
+### Creating Charts in templetes derivative  (VluesFile and Build-In Object)
+
+introdusing the Template Derivative which can be by 2 ways, by Values Files or Build-In Object.
+
+Create 1st chart using Build-In Object : (inatalling simple ConfigMap) 
+
+1> delete all the files in "templetes folder" and cd templetes
+2> create a simple configmap.yml file which will be installed by helm
+        
+         apiVersion: v1
+         kind: Configmap
+         metadata:
+           name: {{.Release.Name}}-confgmap                 # here {{.Release.Name}}  is a template derivative Build In object
+         data:
+           myvalue: "simple config Map"
+
+3> install the ConfigMap using Helm     
+    
+  syntax :- #helm install <name> <Chart_folder_path>         # <name> will replace the {{.Release.Name}} 
+
+  #helm install helm-demo-configmap /tmp/helm_demo/mychart       ##this will install the ConfigMap 
+   
+4> list all the installed charts
+  #helm ls
+
+5> Kubernetes command to check the deployment
+     
+  #kubectl get cm -o wide
+  #kubectl describe cm <ConfigMap_name>
+
+6> to check what values were deployed 
+
+  #helm get manifest <chart_name>
+
+
+Create 1st chart using Value File : (inatalling simple ConfigMap) 
+
+1> delete all the files in "templetes folder" and cd templetes
+
+2> go to the Values.yaml file and edit the value in Key Value format 
+
+syntax:-  key: value
+
+example:-   costCode: CC98112
+
+3> create a simple configmap.yml file which will be installed by helm
+        
+         apiVersion: v1
+         kind: Configmap
+         metadata:
+           name: {{.Release.Name}}-confgmap                 # here {{.Release.Name}}  is a template derivative Build In object
+         data:
+           myvalue: "simple config Map"
+           costCode: {{ .Value.costCode }}            # this will take thw value from the value.yml file  {{ .Value.<key> }}      
+
+4> install the ConfigMap using Helm     
+    
+  syntax :- #helm install <name> <Chart_folder_path>         # <name> will replace the {{.Release.Name}} 
+
+  #helm install helm-demo-configmap /tmp/helm_demo/mychart       ##this will install the ConfigMap 
+   
+5> list all the installed charts
+
+  #helm ls
+
+6> Kubernetes command to check the deployment
+     
+  #kubectl get cm -o wide
+  #kubectl describe cm <ConfigMap_name>
+
+7> to check what values were deployed 
+
+  #helm get manifest <chart_name>
+
+### changing Values from value.yaml file befor release
+
+helm install <chart_name> <chart_path> --set <key>=<value>      #this will chnage the <value> of that we provided of the <key>
+
+helm get manifest <chart_name>
+
+
+
+Templates functions -- http://masterminds.github.io/sprig/strings.html
+
+
+### using multiple Key=Value in a temptale
+
+Entering multipule values in values.yaml file 
+
+[root@kmaster ~]# cat /tmp/helm_demo/mychart/values.yaml
+
+                     costCode: CC98112                         #<Key> <Value> 
+                     projectCode: aazzxxyy                     #<Key> <Value> 
+                     infra:                                    #<Key> 
+                       zone: a,b,c                             #<Key> <Value> under the <Key> 
+                       region: us-e                            #<Key> <Value> under the <Key> 
+
+Calling the Key=Value in ConfigMap.yaml
+
+                     apiVersion: v1
+                     kind: ConfigMap
+                     metadata:
+                       name: {{.Release.Name}}-configmap
+                     data:
+                       myvalue: "sample config Map"
+                       costCode: {{ .Values.costCode }}
+                       zone: {{ quote .Values.infra.zone }}                     #quote is a GO function which will get the alue inside the quotes ""
+                       region: {{ quote .Values.infra.region }}                 #quote is a GO function which will get the alue inside the quotes ""
+                       projectCode: {{ upper .Values.projectCode }}             #upper is a GO function which will make the alphabets in uppercase
+
+Dry Run the helm chart
+
+  #helm install --dry-run --debug <chart-name> <chart-path>
+  
+  #helm install --dry-run --debug multivalueconfig /tmp/helm_demo/mychart
+
+Install helm chart with multivalues 
+ 
+  #helm install  <chart-name> <chart-path>
+  
+  #helm install multivalueconfig /tmp/helm_demo/mychart
+
+  
+
+
+
