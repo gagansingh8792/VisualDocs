@@ -1,0 +1,44 @@
+[ Kube 6 ] Running Docker Containers in Kubernetes Cluster
+==========================================================
+
+View all the information 
+----
+# kubectl get all --all-namespaces       // all the information of all namespaces
+# kubectl get all -o wide                // all the information of 'default' namespace 
+============================================================================================================================================
+Straing new POD
+----
+# kubectl run my-nginx --image nginx          // starts new POD without creating deployment 
+============================================================================================================================================
+Deploy a POD 
+----
+# kubectl create deploy my-nginx --image nginx   // will create Deployment and POD 
+
+DEPLOY -----> REPLICASET ------> PODS
+============================================================================================================================================
+Create Replicas
+----
+# kubectl scale deploy <deployment_name> --replicas <number>  // eg :  #kubectl scale deploy mynginx --replicas 3
+============================================================================================================================================
+Defining Port 
+----
+there are 2 ways to define ports 
+
+1. port-forward (works for single POD)     
+# kubectl port-forward <pod_name> <port>   //eg: #kubectl port-forward my-nginx 8080:80
+
+2. create a service (for replicas and loadbalancer)
+# kubectl expose deploy <deployment_name> --type NodePort --port <port_number>   // eg : kubectl expose deploy my-nginx  --type NodePort --port 80
+
+this will create a service exposing the port 80 on pods
+============================================================================================================================================
+Logs 
+----
+# kubectl logs <pod_name> -n <name_space>
+============================================================================================================================================
+Inspect 
+----
+
+kubectl describe service <service_name>
+kubectl describe pod <pod_name>
+kubectl describe deploy <deployment_name>

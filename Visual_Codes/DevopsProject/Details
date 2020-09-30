@@ -1,0 +1,43 @@
+Setup Git on jenkins console
+===============================
+Install git plugin without restart
+
+Manage Jenkins > Jenkins Plugins > available > github
+Configure git path
+
+Manage Jenkins > Global Tool Configuration > git
+
+
+Setup maven on Jenkins console
+================================
+Install maven plugin without restart
+Manage Jenkins > Jenkins Plugins > available > Maven Invoker
+Manage Jenkins > Jenkins Plugins > available > Maven Integration
+Configure maven path
+Manage Jenkins > Global Tool Configuration > Maven
+
+Ansible Integration Setps
+====================
+Install "publish Over SSH"
+
+Manage Jenkins > Manage Plugins > Available > Publish over SSH
+Enable connection between Ansible and Jenkins
+
+Manage Jenkins > Configure System > Publish Over SSH > SSH Servers
+
+SSH Servers:
+Hostname:<ServerIP>
+username: ansadm
+password: *******
+Test the connection "Test Connection"
+--------------------------------------------------
+
+Ansible YAML
+===============
+---
+- hosts: all
+  become: ture
+
+  tasks:
+  - name: creating docker image using docker command
+    command: docker run -d --name simple-devops-container -p 8080:8080 simple-devops-image

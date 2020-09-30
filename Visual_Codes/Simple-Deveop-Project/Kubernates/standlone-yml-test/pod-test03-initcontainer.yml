@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Pod
+
+metadata:                                  #defining data of POD
+  name: nginxpod                           #name of POD
+  labels:                                  #defining labels (if required)
+    env: prod
+
+spec:                                      #defining specifications of POD
+  containers:
+    - name: first                          #first container name 
+      image: nginx                         #image name 
+      env:                                 #environment
+        - name: myname                     #environment key 
+          value: Gagan                     #environment value 
+        - name: city
+          value: lucknow 
+      args: [ "sleep", "3600" ]            #command inside the container 
+    - name: second                         #second container name 
+      image: coolgourav147/nginx-custom    #image name 
+  initContainers:                          #init container
+    - name: initcontainer1                 # initcontainer name 
+      image: coolgourav147/nginx-custom    #image name 
+      env:                                 #environment
+        - name: myname                     #environment key 
+          value: Gagan                     #environment value 
+        - name: city
+          value: lucknow 
+      args: [ "sleep", "30" ]            #command inside the initcontainer

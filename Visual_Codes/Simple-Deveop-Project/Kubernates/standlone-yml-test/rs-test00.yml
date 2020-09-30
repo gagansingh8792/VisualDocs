@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+
+kind: ReplicaSet
+
+metadata:
+  name: rs1
+  labels:
+    name: rc1
+
+spec:
+  replicas: 6
+  selector:
+    matchExpressions:
+      - key: type
+        operator: In
+        values:
+          - backend
+          - frontend
+      - key: env
+        operator: NotIn
+        values:
+          - nonprod
+  template:
+    metadata:
+      name: pod1
+      labels:
+        env: prod
+        type: frontend
+    spec:
+      containers:
+        - name: containername
+          image: coolgourav147/nginx-custom
+          env:
+            - name: myname
+              value: Gagan
+            - name: City
+              value: Luncknow

@@ -1,0 +1,24 @@
+YAML in K8s
+
+to see the yaml explaination in cluster
+-
+kubectl explain pod 
+kubectl explain deploy
+kubectl explain replicaset
+kubectl explain service 
+kubectl explain secret
+kubectl explain role
+
+See the yaml file atributs  (this will display all yaml demo  and tells how to write the yaml)
+-
+kubectl explain pod --recursive
+kubectl explain deploy --recursive
+kubectl explain replicaset --recursive
+kubectl explain service --recursive
+kubectl explain secret --recursive
+kubectl explain role --recursive
+
+=============================================================================================================================================
+
+
+

@@ -1,0 +1,23 @@
+apiVersion: v1
+
+kind: ReplicationController
+
+metadata:
+  name: firstrcaset
+  labels:
+    app: votingapp
+
+spec:
+  replicas: 5
+  selector:
+    type: app
+  template:
+    metadata:
+      name: nginxpod
+      labels:
+        env: prod
+        type: app
+    spec:
+      containers:
+        - name: containername
+          image: coolgourav147/nginx-custom

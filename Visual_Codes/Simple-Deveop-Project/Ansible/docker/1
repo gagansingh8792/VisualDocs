@@ -1,0 +1,32 @@
+---
+
+- hosts: all
+  become: true
+
+  tasks:
+
+  - name: stop the running container
+    command: docker container stop webtest
+    ignore_error: yes
+  
+  - name: remove the stopped container 
+    command: docker container rm webtest
+    ignore_error: yes
+
+  - name: remove the image 
+    command: docker rmi webtest-image
+    ignore_error: yes
+
+  - name: build docker image using war file
+    command: docker build -t webtest-image .
+    args:
+      chdir: /opt/docker
+
+  - name: tag image name 
+    command: docker tag webtest-image gagansingh92/webtest-image:v1.0
+
+  - name: push image to docker hub
+    command: docker push gagansingh92/webtest-image:v1.0
+
+
+

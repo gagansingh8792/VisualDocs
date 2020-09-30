@@ -1,0 +1,19 @@
+---
+- hosts: ansible
+  become: true
+
+  tasks:
+  - name: remove current docker image
+    command: docker rmi webtest-image
+    ignore_errors: yes
+
+  - name: building docker image
+    command: docker build -t webtest-image .
+    args:
+      chdir: /opt/docker
+
+  - name: tagging image
+    command: docker tag webtest-image gagansingh92/webtest-image:v1.0
+
+  - name: push image to dockerhub
+    command: docker push gagansingh92/webtest-image:v1.0

@@ -1,0 +1,22 @@
+---
+- hosts: dockerhost
+  become: true
+
+  tasks:
+  - name: stop if we have old docker container
+    command: docker container stop webtest
+    ignore_errors: yes
+
+  - name: remove stopped docker container
+    command: docker container rm webtest
+    ignore_errors: yes
+
+  - name: remove current docker image
+    command: docker rmi gagansingh92/webtest-image:v1.0
+    ignore_errors: yes
+
+  - name: pull image
+    command: docker pull gagansingh92/webtest-image:v1.0
+
+  - name: create container
+    command: docker container run -d --name webtest --publish 8080:8080 gagansingh92/webtest-image:v1.0

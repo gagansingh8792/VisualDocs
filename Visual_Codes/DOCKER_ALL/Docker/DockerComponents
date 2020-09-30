@@ -1,0 +1,19 @@
+Docker Components 
+========================
+
+Docker Daemon: its a server, long running program.
+
+Rest-API: Its and interface for the communication between the docker demon and docker client.
+
+Docker Client: A command lin interface which helps to interact with docker daemon via docker commands.
+
+Docker Image
+===============
+Docker images are read-only templates with instructions to create a docker container. 
+A Docker image is a file, comprised of multiple layers, that is used to execute code in a Docker container.
+
+
+Docker Containers
+===================
+A Docker container image is a lightweight, standalone, executable package of software 
+that includes everything needed to run an application: code, runtime, system tools, system libraries and settings.

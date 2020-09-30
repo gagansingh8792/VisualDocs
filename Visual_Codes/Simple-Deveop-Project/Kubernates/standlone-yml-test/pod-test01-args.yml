@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+
+metadata:                 #defining data of POD
+  name: nginxpod          #name of POD
+  labels:                 #defining labels (if required)
+    env: prod
+
+spec:                      #defining specifications of POD
+  containers:
+    - name: containername        #container name 
+      image: nginx               #image name 
+      env:                       #environment
+        - name: myname           #environment key 
+          value: Gagan           #environment value 
+        - name: city
+          value: lucknow 
+      args: [ "sleep", "50" ]    #command inside the container

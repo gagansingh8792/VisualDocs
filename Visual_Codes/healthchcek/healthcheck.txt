@@ -1,0 +1,17 @@
+health check of postgres
+
+#docker service create --name psql --health-cmd="pg-isready -U postgres || exit 1" postgres
+
+=============================================================================================
+
+healthcheck
+Configure a check that’s run to determine whether or not containers for this service are “healthy”. See the docs for the HEALTHCHECK Dockerfile instruction for details on how healthchecks work.
+
+healthcheck:
+  test: ["CMD", "curl", "-f", "http://localhost"]
+  interval: 1m30s
+  timeout: 10s
+  retries: 3
+  start_period: 40s
+
+  

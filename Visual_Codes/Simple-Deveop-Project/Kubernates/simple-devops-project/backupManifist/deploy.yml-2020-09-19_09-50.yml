@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+
+kind: Deployment
+
+metadata:
+  name: webdeployment
+  labels:
+    name: webdeploy
+
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      env: prod
+  strategy:
+    rollingUpdate:
+      maxSurge: 0 
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      name: webpod
+      labels:
+        env: prod
+        type: frontend
+    spec:
+      containers:
+        - name: container
+          image: gagansingh92/webtest-image:v1.3
+          ports:
+            - containerPort: 8080
+
+

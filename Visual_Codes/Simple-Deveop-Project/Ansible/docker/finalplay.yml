@@ -1,0 +1,55 @@
+---
+
+- name: build and push
+  hosts: ansible
+  become: true
+
+  tasks:
+  - name: remove current docker image
+    command: docker rmi webtest-image
+    ignore_errors: yes
+
+  - name: building docker image
+    command: docker build -t webtest-image .
+    args:
+      chdir: /opt/docker
+
+  - name: tagging image
+    command: docker tag webtest-image gagansingh92/webtest-image:v1.0
+
+  - name: push image to dockerhub
+    command: docker push gagansingh92/webtest-image:v1.0
+
+- name: 'Test playbook to sleep for a specified interval'
+  hosts: dockerhost
+  gather_facts: false
+  vars:
+    sleep_interval: 30
+
+  tasks:
+    - name: sleep for a specified interval
+      command: sleep '{{ sleep_interval }}'
+
+- name: deploy on docker host
+  hosts: dockerhost
+  become: true
+
+  tasks:
+  - name: stop if we have old docker container
+    command: docker container stop webtest
+    ignore_errors: yes
+
+  - name: remove stopped docker container
+    command: docker container rm webtest
+    ignore_errors: yes
+
+  - name: remove current docker image
+    command: docker rmi gagansingh92/webtest-image:v1.0
+    ignore_errors: yes
+
+  - name: pull image
+    command: docker pull gagansingh92/webtest-image:v1.0
+
+  - name: create container
+    command: docker container run -d --name webtest --publish 8080:8080 gagansingh92/webtest-image:v1.0
+
