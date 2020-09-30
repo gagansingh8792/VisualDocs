@@ -33,18 +33,18 @@ Instance of a chart that is deployed into the environment.
 
 
          V2
-   ______                  ________________________
-  |      |                |  _______               |
-  | USER |         -------| | Charts|  Repositries |
-  |______|         |      | |_______|              | 
-     |             |      |________________________|
-     |             |                   _________________________
-     |          ___|___               |  _________              |
-     |         |      |               | |         |             |
-     |-------->| Helm |-------------->| | Tiller  |    K8s      |
-               |______|               | | Service |  Cluster    |
-                                      | |_________|             |
-                                      |_________________________|  
+  --------                --------------------------
+  |      |                | ----------             |
+  | USER |         -------| | Charts | Repositries |
+  --------         |      | ----------             | 
+     |             |      --------------------------
+     |             |                   
+     |         --------               ----------------------------
+     |         |      |               | ------------             |
+     |-------->| Helm |-------------->| | Tiller   |    K8s      |
+               --------               | | Service  |  Cluster    |
+                                      | ------------             |
+                                      ----------------------------  
 
 In Version V2 Tiller service is the medium between Helm an K8s Cluster.
 
@@ -52,18 +52,18 @@ In Version V2 Tiller service is the medium between Helm an K8s Cluster.
 
         V3
 
-   ______                  ________________________
-  |      |                |  _______               |
-  | USER |         -------| | Charts|  Repositries |
-  |______|         |      | |_______|              | 
-     |             |      |________________________|
-     |             |                       ____________
-     |          ___|___       ______      |            |
-     |         |       |     | RBAC |     |            |
-     |-------->| Helm  |----------------->|     K8s    |
-               |_______|                  |   Cluster  |
-                                          |            |
-                                          |____________|  
+  |------|                 |-----------------------|
+  |      |                 | |------|              |
+  | USER |          -------| |Charts|  Repositries |
+  |------|          |      | |------|              | 
+     |              |      |-----------------------|
+     |              |                      
+     |         |----|---|      ------      |------------|
+     |         |        |     | RBAC |     |            |
+     |-------->| Helm   |----------------->|     K8s    |
+               |--------|                  |   Cluster  |
+                                           |            |
+                                           |------------|  
 
 
 In version V3 Tiller service is been removed and RBAC (Roll Based Access Control) is introduced which be communicater between Helm and K8s Cluster.
