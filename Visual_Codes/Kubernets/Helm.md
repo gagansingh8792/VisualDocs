@@ -290,7 +290,173 @@ Install helm chart with multivalues
   
   #helm install multivalueconfig /tmp/helm_demo/mychart
 
+Function :- http://masterminds.github.io/sprig/
+
+### Template pipeline and Default values 
+
+     apiVersion: v1
+     kind: ConfigMap
+     metadata:
+       name: {{.Release.Name}}-configmap
+     data:
+       myvalue: "sample config Map"
+       costCode: {{ .Values.costCode }}
+       zone: {{ quote .Values.infra.zone }}                          #quote is a GO function which will get the alue inside the quotes ""
+       region: {{ quote .Values.infra.region }}                      #quote is a GO function which will get the alue inside the quotes ""
+       projectCode: {{ upper .Values.projectCode }}                  #upper is a GO function which will make the alphabets in uppercase
+       pipeline: {{ .Value.projectCode | upper | quote }}            #takes the value of the "projectCode" and make it in upper and quote 
+       now: {{ now | date "2006-01-02" | quote }}                    #"now" will take the current date and formats it in date "2006-01-02"
+       contact: {{ .Value.contact | default "8960678708" | quote}}   #contact value is not defined in values.yml so it will take the DefaultValue from function 
+
+Dry Run the helm chart  
   
+  #helm install --dry-run --debug <chart-name> <chart-path>  
+    
+  #helm install --dry-run --debug multivalueconfig /tmp/helm_demo/mychart
+
+Install helm chart with multivalues 
+ 
+  #helm install  <chart-name> <chart-path>
+  
+  #helm install multivalueconfig /tmp/helm_demo/mychart
+
+Function :- http://masterminds.github.io/sprig/
+
+
+### Flow Control - If/else
+
+syntax:- 
+     
+      {{ if PIPELINE}}
+      #do something
+      {{ else if PIPELINE}}
+      #do something
+      {{ else }}
+      #default case 
+      {{ end }} 
+
+If condition :-
+  
+     apiVersion: v1
+     kind: ConfigMap
+     metadata:
+       name: {{.Release.Name}}-configmap
+     data:
+       myvalue: "sample config Map"
+       costCode: {{ .Values.costCode }}
+       zone: {{ quote .Values.infra.zone }}                          #quote is a GO function which will get the alue inside the quotes ""
+       region: {{ quote .Values.infra.region }}                      #quote is a GO function which will get the alue inside the quotes ""
+       projectCode: {{ upper .Values.projectCode }}                  #upper is a GO function which will make the alphabets in uppercase
+       {{ if eq .Values.infra.zone "us-e" }}ha: true {{ end }}     
+
+note -> in above "if" condition will check if the .Values.infra.zone is equale to "us-e" if yes then key "ha" value will be "true" and condition ends
+
+note -> the conditon can all be wiriten as below and use - befor the condition this will remove the new line in manifest while installing/deploying
+
+       {{- if eq .Values.infra.zone "us-e" }}
+       ha: true 
+       {{- end }}
+
+
+If/else condition :- 
+
+     apiVersion: v1
+     kind: ConfigMap
+     metadata:
+       name: {{.Release.Name}}-configmap
+    data:
+      myvalue: "sample config Map"
+      costCode: {{ .Values.costCode }}
+      zone: {{ quote .Values.infra.zone }}
+      region: {{ quote .Values.infra.region }}
+      projectCode: {{ upper .Values.projectCode }}
+      {{- if eq .Values.infra.region "us-w" }}
+      ha: region west
+      {{- else if eq .Values.infra.region "us-n" }}
+      ha: region north
+      {{- else }}
+      ha: region east
+      {{- end }}
 
 
 
+#### Template using WITH 
+
+syntax:-
+
+   {{ with PIPELINE }}
+   #restricted scope 
+   {{ end }}
+
+
+with condition :- 
+
+editing values in values.yml
+
+    costCode: CC98112
+    infra:
+      region: us-e
+      zone: a,b,c
+    projectCode: aazzxxyy
+    tags:
+      drive: ssd
+      machine: frontdrive
+      rack: 4c
+      vcard: 8g
+
+editing template in config.yml
+
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: {{.Release.Name}}-configmap
+      data:
+        myvalue: "sample config Map"
+        costCode: {{ .Values.costCode }}
+        zone: {{ quote .Values.infra.zone }}
+        region: {{ quote .Values.infra.region }}
+        projectCode: {{ upper .Values.projectCode }}
+        {{- with .Values.tags }}                                  #With condition
+        Machine: {{ .machine | quote }}
+        Rack: {{ .rack | quote }}
+        Vcard: {{ .vcard | quote }}
+        Drive: {{ .drive | upper | quote }}
+        {{- end}}
+
+
+another example of With condition useing in metadata for labels:- 
+
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: {{.Release.Name}}-configmap
+        labels:
+        {{- with .Values.tags }}
+          first: {{ .machine }}
+          second: {{ .rack }}
+          third: {{ .drive }}
+        {{- end }}
+      data:
+        myvalue: "sample config Map"
+        costCode: {{ .Values.costCode }}
+        zone: {{ quote .Values.infra.zone }}
+        region: {{ quote .Values.infra.region }}
+        projectCode: {{ upper .Values.projectCode }}
+        {{- with .Values.tags }}                                  #With condition
+        Machine: {{ .machine | quote }}
+        Rack: {{ .rack | quote }}
+        Vcard: {{ .vcard | quote }}
+        Drive: {{ .drive | upper | quote }}
+        {{- end}}
+
+
+### Looping using RANG :- 
+
+syntax:- 
+
+Lang Used: |-
+  {{- range .Values.LangUsed }}
+  -{{. | title | quote }}
+  {{ end }}
+
+Key and the collection of values
