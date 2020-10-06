@@ -259,24 +259,24 @@ Entering multipule values in values.yaml file
 
 [root@kmaster ~]# cat /tmp/helm_demo/mychart/values.yaml
 
-                     costCode: CC98112                         #<Key> <Value> 
-                     projectCode: aazzxxyy                     #<Key> <Value> 
-                     infra:                                    #<Key> 
-                       zone: a,b,c                             #<Key> <Value> under the <Key> 
-                       region: us-e                            #<Key> <Value> under the <Key> 
+      costCode: CC98112                         #<Key> <Value> 
+      projectCode: aazzxxyy                     #<Key> <Value> 
+      infra:                                    #<Key> 
+        zone: a,b,c                             #<Key> <Value> under the <Key> 
+        region: us-e                            #<Key> <Value> under the <Key> 
 
 Calling the Key=Value in ConfigMap.yaml
 
-                     apiVersion: v1
-                     kind: ConfigMap
-                     metadata:
-                       name: {{.Release.Name}}-configmap
-                     data:
-                       myvalue: "sample config Map"
-                       costCode: {{ .Values.costCode }}
-                       zone: {{ quote .Values.infra.zone }}                     #quote is a GO function which will get the alue inside the quotes ""
-                       region: {{ quote .Values.infra.region }}                 #quote is a GO function which will get the alue inside the quotes ""
-                       projectCode: {{ upper .Values.projectCode }}             #upper is a GO function which will make the alphabets in uppercase
+     apiVersion: v1
+     kind: ConfigMap
+     metadata:
+       name: {{.Release.Name}}-configmap
+     data:
+       myvalue: "sample config Map"
+       costCode: {{ .Values.costCode }}
+       zone: {{ quote .Values.infra.zone }}                     #quote is a GO functiwill get the alue inside the quotes ""
+       region: {{ quote .Values.infra.region }}                 #quote is a GO functiwill get the alue inside the quotes ""
+       projectCode: {{ upper .Values.projectCode }}             #upper is a GO functiwill make the alphabets in uppercase
 
 Dry Run the helm chart
 
@@ -364,19 +364,19 @@ If/else condition :-
      kind: ConfigMap
      metadata:
        name: {{.Release.Name}}-configmap
-    data:
-      myvalue: "sample config Map"
-      costCode: {{ .Values.costCode }}
-      zone: {{ quote .Values.infra.zone }}
-      region: {{ quote .Values.infra.region }}
-      projectCode: {{ upper .Values.projectCode }}
-      {{- if eq .Values.infra.region "us-w" }}
-      ha: region west
-      {{- else if eq .Values.infra.region "us-n" }}
-      ha: region north
-      {{- else }}
-      ha: region east
-      {{- end }}
+     data:
+       myvalue: "sample config Map"
+       costCode: {{ .Values.costCode }}
+       zone: {{ quote .Values.infra.zone }}
+       region: {{ quote .Values.infra.region }}
+       projectCode: {{ upper .Values.projectCode }}
+       {{- if eq .Values.infra.region "us-w" }}
+       ha: region west
+       {{- else if eq .Values.infra.region "us-n" }}
+       ha: region north
+       {{- else }}
+       ha: region east
+       {{- end }}
 
 
 
@@ -460,3 +460,12 @@ Lang Used: |-
   {{ end }}
 
 Key and the collection of values
+
+
+
+
+
+
+
+
+
