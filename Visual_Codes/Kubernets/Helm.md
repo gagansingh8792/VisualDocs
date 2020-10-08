@@ -657,7 +657,7 @@ dry run :-
 
 #helm install --dry-run --debug configmap /tmp/helm-demo/mychart/
 
-Note:- this will not call the build in object, to call the we have to put " . " in main file where we are call the template as (shown in Demo 2)
+Note:- this will not call the build in object, to call the we have to put "$" in main file where we are call the template as (shown in Demo 2)
 
 Demo 2 :-
 
@@ -686,7 +686,7 @@ now we will call the template in main file
        kind: ConfigMap
        metadata:
          name: {{.Release.Name}}-configmap
-         {{- template "mychart.systemlabels" . }}     #putting a "." at the end that will call the golbal variable from _helper.tpl
+         {{- template "mychart.systemlabels" $ }}     #putting a "$" at the end that will call the golbal variable from _helper.tpl
        data:
          myvalue: "sample config Map"
          costCode: {{ .Values.costCode }}
@@ -696,12 +696,83 @@ now we will call the template in main file
          Lang Used: |-
            {{- range .Values.LangUsed }}
            - {{. | title | quote }}
-           {{- end }}   
+           {{- end }} 
 
 
+##### Include template using keyword include
 
+if the intentation is not right in _helper.tpl file we can call the object/variable by "include" keyword
 
+Demo :- 
 
+editing the exernal file _helper.tpl
 
+#vim _helper.tpl  
+
+       {{- define "mychart.systemlabels" }}     #defining the new template
+         labels:
+           drive:ssd
+           machine: frontdrive
+           rack: 4c
+           vcard: 8g
+       {{- end}}
+       
+       {{- define "mychart.version }}                            #here we have not given proper indentation
+       helm: "{{ $.Chart.Name }}-{{ $.Chart.Version }}"            #defining Global Object .Chart.Name and .Chart.Version
+       app.kubernetes.io/instance: "{{ $.Release.Name  }}"         #defining Global Object .Release.Name
+       app.kubernetes.io/version: "{{ $.Chart.AppVersion  }}"      #defining Global Object .Chart.AppVersion
+       app.kubernetes.io/managed-by: "{{ $.Release.Service  }}"    #defining Global Object .Release.Service
+       {{- end }}
+
+now we will call the template in main file 
+
+#vim config.yml      
+
+       apiVersion: v1
+       kind: ConfigMap
+       metadata:
+         name: {{.Release.Name}}-configmap
+         {{- template "mychart.systemlabels" $ }}     #putting a "$" at the end that will call the golbal variable from _helper.tpl
+         {{- include "mychart.version" $ | indent 4 }} #calling version template with "include" keyword, "indent" means indentation.
+       data:
+         myvalue: "sample config Map"
+         costCode: {{ .Values.costCode }}
+         zone: {{ quote .Values.infra.zone }}
+         region: {{ quote .Values.infra.region }}
+         projectCode: {{ upper .Values.projectCode }}
+         Lang Used: |-
+           {{- range .Values.LangUsed }}
+           - {{. | title | quote }}
+           {{- end }}
+
+note:- "indent" for labels will be 4 and for data will be 2
+
+##### Include template using keyword include
+
+in Template folder there can we 3 diffrent file 
+
+1) template file which will be the manifest for Kubernetes
+
+2) notes.txt thats going to have the motes for the file and other helper templates, within the notes.txt we can give the instruction on what all the notes that should get displayed once the chart is deployed and this can act as another template where the normal template syntax can be included within the notes as well, for example, we can access the clobal built in objects as well as the other rules of the template like looking. this can be displayed when running a dey run or any deplyment of helm chart. this note will get diaplyed in the end, that will be useful for the usres to understand.
+
+3) underscore files which is use to define templated and can be called with in the main template file. 
+
+Demo :- 
+
+make new note file in template folder. 
+
+#vi note.txt
+
+       Thank you for suport  {{ .Chart.Name }}.
+       
+       Your release is named  {{ .Release.Name }}.
+       
+       to learn more about the release, try:
+       
+         $ helm status {{ .Release.Name }}
+         $ helm get all {{ .Release.Name }}
+         $ helm uninstall {{ .Release.Name }}
+
+and now install the helm chart and the note will be displayed at the last when deployment has been completed
 
 
