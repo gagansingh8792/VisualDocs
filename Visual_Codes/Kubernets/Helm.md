@@ -461,6 +461,242 @@ Lang Used: |-
 
 Key and the collection of values
 
+editing values in values.yml
+
+       costCode: CC98112
+       infra:
+         region: us-e
+         zone: a,b,c
+       projectCode: aazzxxyy
+       tags:
+         drive: ssd
+         machine: frontdrive
+         rack: 4c
+         vcard: 8g
+       LanUsed:
+         - Python
+         - Ruby
+         - Java
+         - Scala
+
+editing template in config.yml
+
+
+       apiVersion: v1
+       kind: ConfigMap
+       metadata:
+         name: {{.Release.Name}}-configmap
+         labels:
+         {{- with .Values.tags }}
+           first: {{ .machine }}
+           second: {{ .rack }}
+           third: {{ .drive }}
+         {{- end }}
+       data:
+         myvalue: "sample config Map"
+         costCode: {{ .Values.costCode }}
+         zone: {{ quote .Values.infra.zone }}
+         region: {{ quote .Values.infra.region }}
+         projectCode: {{ upper .Values.projectCode }}
+         Lang Used: |-
+           {{- range .Values.LangUsed }}
+           - {{. | title | quote }}
+           {{- end }}
+
+
+
+### Variables :-
+
+with this we can assigne any value to a varable and use it as a value accross the chart
+
+$name.Variable are assigned with a special assignment operator: :=
+
+example: {{- $relname := .Release.Name -}}
+
+editing template in config.yml
+
+       apiVersion: v1
+       kind: ConfigMap
+       metadata:
+         name: {{.Release.Name}}-configmap
+         labels:
+         {{- with .Values.tags }}
+           first: {{ .machine }}
+           second: {{ .rack }}
+           third: {{ .drive }}
+         {{- end }}
+       data:
+         myvalue: "sample config Map"
+         costCode: {{ .Values.costCode }}
+         zone: {{ quote .Values.infra.zone }}
+         region: {{ quote .Values.infra.region }}
+         projectCode: {{ upper .Values.projectCode }}
+         {{- $relname := .Release.Name}}                      #assiging the value to a varibale 
+         LangUsed: |-
+           {{- range $index, $topping := .Values.LangUsed }}  #assiging the value to the variable
+           - {{ $index }} : {{ $topping | quote }}            # calling variable 
+           {{- end }}
+         Release: {{ $relname }}                              #calling a variable
+
+
+
+Example using Global Objects :- 
+
+         apiVersion: v1
+         kind: ConfigMap
+         metadata:
+           name: {{.Release.Name}}-configmap
+           labels:
+           {{- with .Values.tags }}
+             first: {{ .machine }}
+             second: {{ .rack }}
+             third: {{ .drive }}
+             helm: "{{ $.Chart.Name }}-{{ $.Chart.Version }}"            #calling Global Object .Chart.Name and .Chart.Version
+             app.kubernetes.io/instance: "{{ $.Release.Name  }}"         #calling Global Object .Release.Name
+             app.kubernetes.io/version: "{{ $.Chart.AppVersion  }}"      #calling Global Object .Chart.AppVersion
+             app.kubernetes.io/managed-by: "{{ $.Release.Service  }}"    #calling Global Object .Release.Service
+           {{- end }}
+         data:
+           myvalue: "sample config Map"
+           costCode: {{ .Values.costCode }}
+           zone: {{ quote .Values.infra.zone }}
+           region: {{ quote .Values.infra.region }}
+           projectCode: {{ upper .Values.projectCode }}
+           {{- $relname := .Release.Name}}
+           LangUsed: |-
+             {{- range $index, $topping := .Values.LangUsed }}
+             - {{ $index }} : {{ $topping | quote }}
+             {{- end }}
+
+
+
+### Template include another Template :-
+
+we used to keep the temlates as a part of the templates folder and most of the files within the tempalets folder are treated as Kubernetes manifest.
+we can also have the other files which is going to start with underscore 
+so we can have multiple tempalets in the same file and can be named and can use it elsewhere 
+
+syntex:- 
+
+  {{- define "mychart.labels" }}
+    labels:
+      generator: helm
+      date: {{ now | htmlDate }}
+  {{- end }}
+
+ {{- template "mychart.labels" }}
+
+note: defined template can be called again and again.
+
+Demo:- 
+
+editing template in config.yml
+
+       {{- define "mychart.systemlabels" }}     #defining the new template
+         labels:
+           drive:ssd
+           machine: frontdrive
+           rack: 4c
+           vcard: 8g
+       {{- end}}
+
+       apiVersion: v1
+       kind: ConfigMap
+       metadata:
+         name: {{.Release.Name}}-configmap
+         {{- template "mychart.systemlabels" }}  #calling the template
+       data:
+         myvalue: "sample config Map"
+         costCode: {{ .Values.costCode }}
+         zone: {{ quote .Values.infra.zone }}
+         region: {{ quote .Values.infra.region }}
+         projectCode: {{ upper .Values.projectCode }}
+         Lang Used: |-
+           {{- range .Values.LangUsed }}
+           - {{. | title | quote }}
+           {{- end }}   
+
+
+### Template include - Using Scope
+
+Demo 1 :- 
+
+will create the new file with the underscore under the template forlder. 
+
+#vim _helper.tpl  
+
+       {{- define "mychart.systemlabels" }}         #defining the new template
+         labels:
+           drive:ssd
+           machine: frontdrive
+           rack: 4c
+           vcard: 8g
+       {{- end}}
+
+now we will call the template in main file 
+
+#vim config.yml      
+
+       apiVersion: v1
+       kind: ConfigMap
+       metadata:
+         name: {{.Release.Name}}-configmap
+         {{- template "mychart.systemlabels" }}       #calling the template
+       data:
+         myvalue: "sample config Map"
+         costCode: {{ .Values.costCode }}
+         zone: {{ quote .Values.infra.zone }}
+         region: {{ quote .Values.infra.region }}
+         projectCode: {{ upper .Values.projectCode }}
+         Lang Used: |-
+           {{- range .Values.LangUsed }}
+           - {{. | title | quote }}
+           {{- end }}   
+
+dry run :- 
+
+#helm install --dry-run --debug configmap /tmp/helm-demo/mychart/
+
+Note:- this will not call the build in object, to call the we have to put " . " in main file where we are call the template as (shown in Demo 2)
+
+Demo 2 :-
+
+calling the buildin object from external file
+editing the exernal file _helper.tpl
+
+#vim _helper.tpl  
+
+       {{- define "mychart.systemlabels" }}     #defining the new template
+         labels:
+           drive:ssd
+           machine: frontdrive
+           rack: 4c
+           vcard: 8g
+           helm: "{{ $.Chart.Name }}-{{ $.Chart.Version }}"            #defining Global Object .Chart.Name and .Chart.Version
+           app.kubernetes.io/instance: "{{ $.Release.Name  }}"         #defining Global Object .Release.Name
+           app.kubernetes.io/version: "{{ $.Chart.AppVersion  }}"      #defining Global Object .Chart.AppVersion
+           app.kubernetes.io/managed-by: "{{ $.Release.Service  }}"    #defining Global Object .Release.Service
+       {{- end}}
+
+now we will call the template in main file 
+
+#vim config.yml      
+
+       apiVersion: v1
+       kind: ConfigMap
+       metadata:
+         name: {{.Release.Name}}-configmap
+         {{- template "mychart.systemlabels" . }}     #putting a "." at the end that will call the golbal variable from _helper.tpl
+       data:
+         myvalue: "sample config Map"
+         costCode: {{ .Values.costCode }}
+         zone: {{ quote .Values.infra.zone }}
+         region: {{ quote .Values.infra.region }}
+         projectCode: {{ upper .Values.projectCode }}
+         Lang Used: |-
+           {{- range .Values.LangUsed }}
+           - {{. | title | quote }}
+           {{- end }}   
 
 
 
