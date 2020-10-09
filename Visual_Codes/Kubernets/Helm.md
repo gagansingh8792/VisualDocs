@@ -144,6 +144,18 @@ Create Chart
 
   Create 1st chart (inatalling simple ConfigMap):
 
+within in the template we have ddefault files been created 
+
+          deployment.yaml       #deployment template
+          _helpers.tpl          #helper template
+          hpa.yaml
+          ingress.yaml
+          NOTES.txt             #notes template
+          serviceaccount.yaml
+          service.yaml
+          tests
+
+
 1> delete all the files in "templetes folder" and cd templetes
 2> create a simple configmap.yml file which will be installed by helm
         
@@ -753,7 +765,7 @@ in Template folder there can we 3 diffrent file
 
 1) template file which will be the manifest for Kubernetes
 
-2) notes.txt thats going to have the motes for the file and other helper templates, within the notes.txt we can give the instruction on what all the notes that should get displayed once the chart is deployed and this can act as another template where the normal template syntax can be included within the notes as well, for example, we can access the clobal built in objects as well as the other rules of the template like looking. this can be displayed when running a dey run or any deplyment of helm chart. this note will get diaplyed in the end, that will be useful for the usres to understand.
+2) "NOTES.txt" thats going to have the motes for the file and other helper templates, within the notes.txt we can give the instruction on what all the notes that should get displayed once the chart is deployed and this can act as another template where the normal template syntax can be included within the notes as well, for example, we can access the clobal built in objects as well as the other rules of the template like looking. this can be displayed when running a dey run or any deplyment of helm chart. this note will get diaplyed in the end, that will be useful for the usres to understand.
 
 3) underscore files which is use to define templated and can be called with in the main template file. 
 
@@ -761,7 +773,7 @@ Demo :-
 
 make new note file in template folder. 
 
-#vi note.txt
+#vim NOTES.txt
 
        Thank you for suport  {{ .Chart.Name }}.
        
@@ -776,3 +788,184 @@ make new note file in template folder.
 and now install the helm chart and the note will be displayed at the last when deployment has been completed
 
 
+
+##### Sub Charts
+
+subchart will be having a collection of templates and values and the same hierarchy.
+Charts is a separate entity where it will be having the collection of templates and values where it can be packaged togeather, shared it with a repository as well as send it as a package to the external chart.
+Within "charts" folder we can have n'number of sub charts. 
+
+DEMO :- 
+
+          #cd charts
+
+          #helm create mysubchart   
+
+This will create the subchart inside the parent chart. 
+We can define the valed in subchart and call the value form sub template file, if we will define the values in parent value chart it will overwrite the vale of subchart. 
+
+
+#### Sub Chart global
+
+provide a global value as a part of the parent chart value file 
+
+
+
+Demo :- 
+
+edit the parent values.yml
+
+                costCode: CC98112
+                infra:
+                  region: us-e
+                  zone: a,b,c
+                projectCode: aazzxxyy
+                tags:
+                  drive: ssd
+                  machine: frontdrive
+                  rack: 4c
+                  vcard: 8g
+                LangUsed:
+                  - Python
+                  - Ruby
+                  - Java
+                  - Scala
+                mysubchart:
+                  dbhostname: prodmysqlnode
+                global:                                 #defining golobal value in parent value chart
+                  orgdomain: com.muthu4all
+
+edit the parent template file and call the global value defined in parent values chart.
+
+              apiVersion: v1
+              kind: ConfigMap
+              metadata:
+                name: {{.Release.Name}}-configmap
+                {{- template "mychart.systemlabels" $ }}     
+                {{- include "mychart.version" $ | indent 4 }}
+              data:
+                myvalue: "sample config Map"
+                costCode: {{ .Values.costCode }}
+                zone: {{ quote .Values.infra.zone }}
+                region: {{ quote .Values.infra.region }}
+                projectCode: {{ upper .Values.projectCode }}
+                orgdomain: {{ .Values.global.orgdomain }}
+
+edit the sub template file
+
+                apiVersion: v1
+                kind: ConfigMap
+                metadata:
+                  name: {{ .Release.Name }}-innerconfig
+                data:
+                  dbhost: {{ .Values.dbhostname }}
+                  orgdomain: {{ .Values.global.orgdomain }}
+                
+now run the dry run and see the values called. 
+
+                # helm install --dry-run --debug configmap /tmp/helm-demo/mychart
+
+
+#### Repository Workflow
+
+Charts Repository and Registry 
+
+the centralized location where all charts are been kept are called as Repository or Registry, Registry is OCI compatable (OCI open container and image standard registry) and thats what its ging to follow within the docker.
+we can manage the chart within the registry as well as we can have our own repository as well. 
+now a days OCI Registry is supported. 
+through which we can manage version and pull whatever version is required and give permision.
+
+#### Repository hosting options
+
+Chart Repository :-
+
+An HTTP server which can host a set of files like index.ymal file an other chart packages.
+when the charts are ready, can be uploaded to the server and shared.
+Multiple charts with dependency and version can be managed. 
+Will be managed like source control system in a common location.
+Can be hosed as part of 
+  google compute cloud bucket
+  AWS s3 bucket
+  Github Pages
+  Own webserver (chartmuseum) https://chartmuseum.com/docs/#installation
+
+we will be using Chartmuseum for now (https://chartmuseum.com/docs/#installation)
+
+Download the Chart Museum:- 
+
+            curl -LO https://s3.amazonaws.com/chartmuseum/release/latest/bin/linux/amd64/chartmuseum
+          
+            chmod +x ./chartmuseum
+          
+            mv ./chartmuseum /usr/local/bin
+          
+            chartmuseum --version
+
+Onces done we can start it by local or use GCP or ASW s3 or Github to store the charts  https://chartmuseum.com/docs/#installation
+
+We will start localy : -
+
+            chartmuseum --debug --port=8080 \             #port 8080
+            --storage="local" \                           #storage local
+            --storage-local-rootdir="./chartstorage"      #dictory where it will store the charts 
+
+Now we can access it through the web browser     http://<ip>:<port>
+
+Add this repo to helm 
+
+     synatx:-      # helm repo add <reponame> <url>
+     
+     example:-     # helm repo add mychartmuseumrepo http://192.168.253.128:9081
+                   
+                   # helm repo list
+                   # helm search repo nginx          #this will not show any thing cause we have not put any charts in museum
+
+
+##### Add Chart to Chartmuseum repository
+
+create the chart and to the museum 
+
+1) create the new chart "myrepotest" at client node and edit the "Discription" in "Charts.yaml' within the "myrepotest" chart   
+
+            # helm create myrepotest
+
+            # cd myrepotest
+            # vim Charts.yaml 
+
+2) create a package of the chart which will create the "tgz' file "repotest-0.1.0.tgz"
+
+            # helm package repotest/
+
+3) push the chart in master node where chartmuseum is running by using "curl or push" command
+
+            # curl --data-binary "@repotest-0.1.0.tgz" http://192.168.253.128:9081/api/charts
+
+4) Update the helm 
+
+           # helm update
+
+5) check the repo list 
+            
+           # helm repo list                          #will list all the repo
+           # helm search repo <reponame>             #will search the package in repo
+
+
+#####   Maintain Chart version
+
+
+Given a version number MAJOR.MINOR.PATCH, increment the:     (https://semver.org/)
+
+MAJOR version when you make incompatible API changes,
+MINOR version when you add functionality in a backwards compatible manner, and
+PATCH version when you make backwards compatible bug fixes.
+
+We can control the versioning with the Charts.yaml editing "version:" and "appVersion:"
+
+
+
+
+
+        
+
+
+         
