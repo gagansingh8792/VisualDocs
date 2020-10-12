@@ -962,8 +962,88 @@ PATCH version when you make backwards compatible bug fixes.
 We can control the versioning with the Charts.yaml editing "version:" and "appVersion:"
 
 
+           #helm package <chartname>
+           #curl --data-binary "@<chartname>" <repository_url>
+           #helm repo update 
+           #helm search repo <chartname>
 
 
+#####   Chart push plugin
+
+
+            # helm plugin install https://github.com/chartmuseum/helm-push.git
+            
+            # helm plugin list
+            
+            # helm create <chartname>
+
+            # helm package <chartname>
+            
+            # helm push <chartname> <reponame>
+            
+            # helm repo update
+            
+            # helm search repo <reponame>
+
+
+####   Maintain github as repository
+
+       
+create a new repository in git and configure it in master machine, aslo create the index.yaml in the directory as its does not get created automaticlly.
+
+        # cd <gitrepo>
+        # helm repo index .
+
+
+
+#### Helm Chart Management 
+
+createing a sample chart, making a package, indtalling deployment, upgrading deployment 
+
+
+1) Creating Sample chart 
+        
+            # helm create <chartname>
+
+2) Pusing chart to git repo
+
+            # helm push <chartname> <reponame>
+
+3) Updating Repo
+
+            # helm repo list
+            # helm search repo 
+            # helm repo update 
+            # helm search repo <reponame>
+            # helm search repo -l <reponame>
+
+4) Deploying throught helm 
+
+            # kubectl get all
+            # helm install <install-chartname> <chartname>
+            # helm list
+            # kubectl get all
+
+5) updating helm 
+
+            # helm list
+            # vi Charts.yaml
+            # vi values.yaml
+            # helm push upgrade-rlbk/ mychartmuseumrepo
+            # helm repo update 
+
+helm search repo mychartmuseumrepo
+
+helm search repo -l mychartmuseumrepo
+
+
+helm list
+helm upgrade install-upgrade-rlbk-demo mychartmuseumrepo/upgrade-rlbk
+
+kubectl get all
+
+helm history install-upgrade-rlbk-demo
+ 
 
         
 
