@@ -1032,18 +1032,23 @@ createing a sample chart, making a package, indtalling deployment, upgrading dep
             # helm push upgrade-rlbk/ mychartmuseumrepo
             # helm repo update 
 
-helm search repo mychartmuseumrepo
+6) list the packages in repo 
 
-helm search repo -l mychartmuseumrepo
+            # helm search repo <reponame>
 
+            # helm search repo -l <reponame>    #with all the versions 
 
-helm list
-helm upgrade install-upgrade-rlbk-demo mychartmuseumrepo/upgrade-rlbk
+7) upgrade the deployment 
 
-kubectl get all
-
-helm history install-upgrade-rlbk-demo
+            # helm list
+            # helm upgrade <install-chartname> <chartname>
+            # kubectl get all
+            # helm history <intstall-chartname>
  
+
+#####   Rollback Helm Installed Chart
+
+
 
         
 
