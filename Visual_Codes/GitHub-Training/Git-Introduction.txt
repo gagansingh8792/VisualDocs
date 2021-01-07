@@ -1,0 +1,18 @@
+Key points of Git:
+
+1. Distributed Version Control system
+2. Available as free source
+3. Can use paid services to make private repository
+4. By default in free service, repositories are public
+
+GIT Flow
+
+Working directory----------->Staging-------------->LocalRepo----------->RemoteRepo
+		   Git Add  	     Git Commit		     Git Push
+
+
+
+Other Similar products in Market:
+
+1. BigBucket
+2. Git Lab
