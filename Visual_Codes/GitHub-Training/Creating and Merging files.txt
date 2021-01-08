@@ -28,5 +28,9 @@ git branch gitdoc
 	
 	git merge gitdoc
 
-7. Create a pull request from the UI.
+7. Push the changes to repo
+
+	git push
+
+8. Create a pull request from the UI.
 
