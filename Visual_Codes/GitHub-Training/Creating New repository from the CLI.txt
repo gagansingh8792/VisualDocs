@@ -1,0 +1,57 @@
+Steps to create new repository from CLI:
+
+1. Make a directory in your local repository
+	For eg: I have created a clirepo directory under d:/Babneet
+
+2. Navigate to the directory created above and add files to it 
+	eg: touch test.txt
+
+3. Create README.md file
+	touch README.md
+
+4. Write content to this file
+	cat > README.md
+		
+		#clirepo
+CTRL+d to save the file
+
+5. Initialize Git on this 
+	git init
+
+6. Add the files
+	git add .
+
+7. Commit the changes
+	git commit -m "clirepo"
+
+8. Create a master branch and set to default
+	git branch -M master
+
+9. Add Orgin to the remote
+	git remote add origin https://github.com/Babneet/clirepo.git 
+
+10. Goto UI and create a new repo by the same name as in local directory
+
+11. Push the repo
+	git push origin master
+
+
+
+
+Below are the Commands in sequence
+
+cd /d/Babneet
+mkdir clirepo
+cd clirepo
+touch test.txt
+touch README.md
+cat > README.md
+	
+	# clirepo
+
+git init
+git add .
+git commit -m "clirepo"
+git branch -M master
+git remote add origin https://github.com/Babneet/clirepo.git
+git push origin master
