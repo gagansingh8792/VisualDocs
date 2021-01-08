@@ -1,0 +1,36 @@
+Steps to Create Pull request:
+
+1. Clone the repository to local repository
+   git clone <Repository Http URL from the UI>
+
+git clone https://github.com/Babneet/VisualDocs.git
+
+2. Create a new branch
+	git branch <Branch name>
+
+git branch gitdoc
+
+3. Add modify files
+
+	git add . 
+
+4. Commit the changes
+	
+	git commit -m "Your message here"
+
+5. Switch to master branch
+
+	git checkout master
+
+6. Merge the changes of new branch to master branch
+
+	git merge <Branch name>
+	
+	git merge gitdoc
+
+7. Push the changes to repo
+
+	git push
+
+8. Create a pull request from the UI.
+
