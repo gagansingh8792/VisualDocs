@@ -22,9 +22,11 @@ git branch gitdoc
 
 	git checkout master
 
-6. Merger the changes to master branch
+6. Merge the changes of new branch to master branch
 
-	git merger origin master
+	git merge <Branch name>
+	
+	git merge gitdoc
 
 7. Create a pull request from the UI.
 
