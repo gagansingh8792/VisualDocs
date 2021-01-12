@@ -20,5 +20,9 @@
 20. git commit -a -m "" --- Add and commit changes.
 21. git rm <filename> -- Will remove file from staging as well as working directory.
 22. git rm --cached <filename> -- Will remove file from staging directory
+<<<<<<< HEAD
 23.
+=======
+
+>>>>>>> master
   
