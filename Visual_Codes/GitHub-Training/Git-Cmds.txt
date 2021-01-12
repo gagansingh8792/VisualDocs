@@ -1,11 +1,24 @@
-1. git clone --- To clone the project in Local Repo
-2. git branch <branch name> -- To create new branch
-3. git checkout <branch name> -- To switch to new branch
-4. git status -- To check the status of tracked and untracked changes on current branch
-5. git add . -- To add all the untracked changes from working repo to staging area
-6. git add <Folder/file> -- To add a particular file from working repo to staging area
-7. git commit -- To commit the changes made to local repo
-8. git commit -m "<Your message/description>" -- To commit the changes with message
-9. git push origin master -- To push committed changes to master branch (Origin branch)
-10.git config --global http.sslVerify false -- To set SSL certification to false.
+1.  git clone --- To clone the project in Local Repo
+2.  git branch <branch name> -- To create new branch
+3.  git checkout <branch name> -- To switch to new branch
+4.  git status -- To check the status of tracked and untracked changes on current branch
+5.  git add . -- To add all the untracked changes from working repo to staging area
+6.  git add <Folder/file> -- To add a particular file from working repo to staging area
+7.  git commit -- To commit the changes made to local repo
+8.  git commit -m "<Your message/description>" -- To commit the changes with message
+9.  git push origin master -- To push committed changes to master branch (Origin branch)
+10. git config --global http.sslVerify false -- To set SSL certification to false.
+11. git Pull -- To get update the repository from the server.
+12. git log --  To get all the log for last commits.
+13. git log -f -<No.> -- To see only specific number of log. For eg. if we want to see only the last commit, then we will mention no. as 1.
+14. git checkout <filename> -- To restore last committed file. 
+15. git checkout -f -- To restore all the files last committed. 
+16. git remote add <URL> -- To add remote
+17. git init -- To initialize the git in folder.
+18. git diff -- Shows difference between staging area and working directory
+19. git diff --staged -- to show difference between staging area and last commit. 
+20. git commit -a -m "" --- Add and commit changes.
+21. git rm <filename> -- Will remove file from staging as well as working directory.
+22. git rm --cached <filename> -- Will remove file from staging directory
+
   
