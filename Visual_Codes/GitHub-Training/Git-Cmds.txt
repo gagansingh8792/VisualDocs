@@ -20,9 +20,5 @@
 20. git commit -a -m "" --- Add and commit changes.
 21. git rm <filename> -- Will remove file from staging as well as working directory.
 22. git rm --cached <filename> -- Will remove file from staging directory
-<<<<<<< HEAD
-23.
-=======
-
->>>>>>> master
-  
+23. git status -s -- Will tell status of file in both working as well as stagging directory
+24. touch -gitignore -- To create a new directory and will specify all the files in it to ignore the file that needs to be ignored.
